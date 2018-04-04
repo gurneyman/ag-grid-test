@@ -1,0 +1,57 @@
+@viventium-purple: rgb(124, 84, 177);
+@viventium-pink: #cc62a2;
+
+@light-grey: rgba(237, 240, 242, 0.25);
+@light-medium-grey: rgb(209, 217, 224);
+@medium-grey: #666575;
+
+.ag-theme-material {
+    // Basic row and cell styles
+    .ag-row {
+        font-weight: bold;
+        border-bottom: 1px solid @light-medium-grey;
+    }
+    .ag-header-cell {
+        border-top: 1px solid @light-medium-grey;
+        color: @medium-grey
+    }
+    .ag-row-odd,
+    .ag-header-cell {
+        background: @light-grey;
+    }
+
+    // Row hover states
+    .ag-row.ag-row-hover,
+    .ag-column-hover {
+        cursor: pointer;
+    }
+    .ag-row.ag-row-hover,
+    .ag-row-selected {
+        background: fadeout(@viventium-purple, 75%);
+    }
+
+    .ag-column-hover {
+        background: fadeout(@viventium-pink, 75%);
+    }
+
+    // Focus styles
+    .ag-cell-focus,
+    .ag-cell-last-left-pinned.ag-cell-focus {
+        border: 1px solid @viventium-pink;
+    }
+
+    // Menu styles
+    .ag-icon-menu {
+        color: @viventium-pink;
+    }
+
+    // Menu active styles
+    .ag-header-cell.ag-column-menu-visible {
+        background: white;
+        border: 1px solid @light-medium-grey;
+        border-bottom: none;
+        .ag-header-cell-resize {
+            display: none;
+        }
+    }
+}
