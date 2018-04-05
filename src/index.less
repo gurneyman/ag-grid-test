@@ -5,6 +5,33 @@
 @light-medium-grey: rgb(209, 217, 224);
 @medium-grey: #666575;
 
+// Basic reset
+*, *:after, *:before {
+    box-sizing: border-box;
+}
+html,
+body {
+    font-size: 18px;
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+}
+.main {
+    height: 100%;
+}
+.toolbar {
+    padding: 20px;
+    input{
+        height: 40px;
+        line-height: 40px;
+        padding: 0 14px 1px 14px;
+    }
+}
+.payroll-grid {
+    height: calc(~'100% - 81px');
+}
+// Override material theme styles
 .ag-theme-material {
     // Basic row and cell styles
     .ag-row {
@@ -30,14 +57,20 @@
         background: fadeout(@viventium-purple, 75%);
     }
 
-    .ag-column-hover {
-        background: fadeout(@viventium-pink, 75%);
+    .ag-row.ag-row-hover .ag-cell {
+        border-top: 1px solid @viventium-purple;
+        border-bottom: 1px solid @viventium-purple;
     }
+
+    /* .ag-column-hover {
+        background: fadeout(@viventium-pink, 75%);
+     } */
 
     // Focus styles
     .ag-cell-focus,
     .ag-cell-last-left-pinned.ag-cell-focus {
-        border: 1px solid @viventium-pink;
+        // border: 1px solid @viventium-pink;
+        border-color: transparent;
     }
 
     // Menu styles
@@ -53,5 +86,43 @@
         .ag-header-cell-resize {
             display: none;
         }
+    }
+
+    // Editing styles
+    .cell-editable,
+    .ag-cell-not-inline-editing,
+    .ag-cell-inline-editing {
+        line-height: 46px;
+        height: 100%;
+        padding: 0 23px;
+    }
+
+    .cell-editable:before {
+        content: "";
+        position: absolute;
+        border: 1px solid @light-medium-grey;
+        border-radius: 3px;
+        left: 8px;
+        top: 8px;
+        right: 8px;
+        bottom: 8px;
+        background: white;
+        z-index: -1;
+    }
+    .ag-cell-inline-editing input[type="text"] {
+        border-bottom: none !important;
+    }
+    .ag-cell-inline-editing {
+        background: none;
+        box-shadow: none;
+        input,
+        select {
+            border-color: transparent;
+            outline: none;
+        }
+    }
+
+    .ag-cell-inline-editing.cell-editable:before {
+        border-color: @viventium-purple;
     }
 }

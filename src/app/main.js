@@ -4,6 +4,7 @@ module.exports = {
 };
 
 function mainCtrl($scope, $log, $document) {
+  $scope.showRowData = false;
   var columnDefs = [
     {headerName: '', width: 65, field: 'isSelected', headerCheckboxSelection: true, checkboxSelection: true, suppressSorting: false, suppressMenu: true, pinned: true},
     {headerName: 'EE #', field: 'eeNum'},
@@ -17,14 +18,16 @@ function mainCtrl($scope, $log, $document) {
       cellEditorParams: {
         values: ['Hourly', 'Salary']
       },
-      editable: true
+      editable: true,
+      cellClass: 'cell-editable'
     },
-    {headerName: 'Base Rate / Salary', field: 'salary', editable: true},
+    {headerName: 'Base Rate / Salary', field: 'salary', editable: true, cellClass: 'cell-editable'},
     {
       headerName: 'Block AutoPay',
       field: 'blockAutoPay',
       cellRenderer: CheckBoxCellRenderer
-    }
+    },
+    {headerName: 'Date Test', field: 'date', editable: true, cellEditor: 'datePicker', cellClass: 'cell-editable'}
   ];
 
   // cell renderer class
@@ -40,12 +43,17 @@ function mainCtrl($scope, $log, $document) {
       this.checkbox.innerHTML += '<span class="ag-icon ag-icon-checkbox-unchecked"></span>';
     }
     this.checkbox.innerHTML += '</span>';
-    this.eventListener = function (event) {
-      event.target.classList.toggle('ag-icon-checkbox-checked');
-      event.target.classList.toggle('ag-icon-checkbox-unchecked');
-    };
+    this.eventListener = clickEventHandler;
 
     this.checkbox.addEventListener('click', this.eventListener);
+
+    function clickEventHandler(event) {
+      $scope.$apply(function () {
+        $scope.gridOptions.rowData[params.rowIndex].blockAutoPay = !$scope.gridOptions.rowData[params.rowIndex].blockAutoPay;
+      });
+      event.target.classList.toggle('ag-icon-checkbox-checked');
+      event.target.classList.toggle('ag-icon-checkbox-unchecked');
+    }
   };
 
   CheckBoxCellRenderer.prototype.getGui = function () {
@@ -64,6 +72,9 @@ function mainCtrl($scope, $log, $document) {
   };
 
   $scope.gridOptions = {
+    components: {
+      datePicker: getDatePicker()
+    },
     columnDefs: columnDefs,
     rowData: generateRowData(),
     rowSelection: 'multiple',
@@ -73,6 +84,13 @@ function mainCtrl($scope, $log, $document) {
     suppressRowClickSelection: true,
     suppressMenuHide: true,
     singleClickEdit: true,
+    enableRangeSelection: true,
+    getContextMenuItems: getContextMenuItems,
+    allowContextMenuWithControlKey: true,
+    showToolPanel: true,
+    onModelUpdated: function () {
+      $log.log('Model Update', $scope.gridOptions.api.getModel());
+    },
     onCellEditingStarted: function (event) {
       $log.log('cellEditingStarted', event);
     },
@@ -80,8 +98,17 @@ function mainCtrl($scope, $log, $document) {
       $log.log('cellEditingStopped', event);
     },
     postProcessPopup: function (params) {
-      $log.log('popup', params.ePopup);
-      // Need to adjust left and top here by parsing value, etc.
+      $log.log('Popup triggered', params);
+      // called for column and context menus
+      // When Context menu, params.eventSource === null
+
+      // Positioning has to be done in js
+      // var newLeft = parseInt(params.ePopup.style.left, 10) - 150;
+      // params.ePopup.style.left = newLeft + 'px';
+      // var newTop = parseInt(params.ePopup.style.top, 10) - 1;
+      // params.ePopup.style.top = newTop + 'px';
+      // Set width to current column width
+      // params.ePopup.style.width = params.column.actualWidth + 'px';
     }
   };
 
@@ -91,7 +118,7 @@ function mainCtrl($scope, $log, $document) {
     var payTypes = ['Hourly', 'Salary'];
 
     var fakeData = [];
-    for (var i = 0; i <= 10000; i += 1) {
+    for (var i = 0; i <= 10; i += 1) {
       var payType = payTypes[Math.floor(Math.random() * 2)];
       var salary = getRandomSalary(payType, i);
 
@@ -102,7 +129,8 @@ function mainCtrl($scope, $log, $document) {
         lastName: lastNames[i % lastNames.length],
         payType: payType,
         salary: salary,
-        blockAutoPay: (Math.floor(Math.random() * 2) === 1)
+        blockAutoPay: (Math.floor(Math.random() * 2) === 1),
+        date: ''
       });
     }
     return fakeData;
@@ -113,5 +141,92 @@ function mainCtrl($scope, $log, $document) {
       }
       return ((Math.random() * (i % 10) * 2000) + 50000).toFixed(2);
     }
+  }
+
+  // Context Menu
+  function getContextMenuItems(params) {
+    $log.log('params', params);
+    var result = [
+      {
+        name: 'Add Line',
+        action: logActionName
+      },
+      {
+        name: 'Add Check',
+        action: logActionName
+      },
+      'separator',
+      {
+        name: 'Delete Check',
+        action: logActionName
+      },
+      'separator',
+      {
+        name: 'Preview Check',
+        action: logActionName
+      },
+      {
+        name: 'Employee Profile',
+        action: logActionName
+      },
+      {
+        name: 'Detail View',
+        action: logActionName
+      }
+    ];
+
+    return result;
+
+    function logActionName() {
+      $log.log(this.name + ' was pressed');
+    }
+  }
+
+  // Date Picker
+  function getDatePicker() {
+    // function to act as a class
+    function Datepicker() {}
+
+    // gets called once before the renderer is used
+    Datepicker.prototype.init = function (params) {
+      // create the cell
+      this.eInput = $document[0].createElement('input');
+      this.eInput.value = params.value;
+
+      // https://jqueryui.com/datepicker/
+      angular.element(this.eInput).datepicker({
+        dateFormat: 'dd/mm/yy'
+      });
+    };
+
+    // gets called once when grid ready to insert the element
+    Datepicker.prototype.getGui = function () {
+      return this.eInput;
+    };
+
+    // focus and select can be done after the gui is attached
+    Datepicker.prototype.afterGuiAttached = function () {
+      this.eInput.focus();
+      this.eInput.select();
+    };
+
+    // returns the new value after editing
+    Datepicker.prototype.getValue = function () {
+      return this.eInput.value;
+    };
+
+    // any cleanup we need to be done here
+    Datepicker.prototype.destroy = function () {
+      // but this example is simple, no cleanup, we could
+      // even leave this method out as it's optional
+    };
+
+    // if true, then this editor will appear in a popup
+    Datepicker.prototype.isPopup = function () {
+      // and we could leave this method out also, false is the default
+      return false;
+    };
+
+    return Datepicker;
   }
 }

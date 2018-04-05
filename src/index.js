@@ -2,8 +2,9 @@ var angular = require('angular');
 
 require('angular-ui-router');
 
-var agGrid = require('ag-grid/main-with-styles');
-agGrid.initialiseAgGridWithAngular1(angular);
+var enterprise = require('ag-grid-enterprise/dist/ag-grid-enterprise');
+enterprise.LicenseManager.setLicenseKey('Evaluation_License_Valid_Until_6_June_2018__MTUyODIzOTYwMDAwMA==4c69615c372b7cdc6c4bda8601ac106b');
+enterprise.initialiseAgGridWithAngular1(angular);
 
 var routesConfig = require('./routes');
 
