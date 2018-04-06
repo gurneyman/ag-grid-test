@@ -42,3 +42,5 @@ function CheckBoxCellRendererBuilderService($document) {
     return CheckBoxCellRenderer;
   }
 }
+
+CheckBoxCellRendererBuilderService.$inject = ['$document'];

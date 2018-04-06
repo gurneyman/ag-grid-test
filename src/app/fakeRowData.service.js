@@ -39,7 +39,7 @@ function fakeRowDataService() {
 
   function generateRows() {
     var fakeData = [];
-    for (var i = 0; i <= 10; i += 1) {
+    for (var i = 0; i <= 100000; i += 1) {
       fakeData.push(createRow());
     }
     return fakeData;

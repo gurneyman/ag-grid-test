@@ -3,6 +3,8 @@ module.exports = {
   controller: mainCtrl
 };
 
+mainCtrl.$inject = ['$scope', '$log', '$document', 'fakeRowDataService', 'CheckBoxCellRendererBuilderService', 'DatePickerBuilderService'];
+
 function mainCtrl($scope, $log, $document, fakeRowDataService, CheckBoxCellRendererBuilderService, DatePickerBuilderService) { // eslint-disable-line max-params
   $scope.showRowData = false;
   var columnDefs = [

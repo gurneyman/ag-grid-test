@@ -52,3 +52,5 @@ function DatePickerBuilderService($document) {
     return Datepicker;
   }
 }
+
+DatePickerBuilderService.$inject = ['$document'];
