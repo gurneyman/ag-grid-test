@@ -3,6 +3,9 @@
       <input type="text" ng-model="gridOptions.quickFilterText" placeholder="Search Checks..."/>
       <button ng-click="gridOptions.api.sizeColumnsToFit();">Autosize Columns</button>
       <button ng-click="showRowData = !showRowData">{{ (showRowData) ? 'Hide' : 'Show' }} row data</button>
+      <button ng-click="addNewRow()">Add row</button>
+      <button ng-click="removeSelectedRows()">Remove Selected Rows</button>
+      <button ng-click="toggleFirstNameColumn()">Toggle First Name Column</button>
       <pre ng-if="showRowData" style="height: 200px; overflow: scroll; border: 1px solid; margin-top: 16px;">{{ gridOptions.rowData  | json }}</pre>
   </div>
   <div ag-grid="gridOptions" class="payroll-grid ag-theme-material"></div>

@@ -10,9 +10,16 @@ var routesConfig = require('./routes');
 
 var main = require('./app/main');
 
+var fakeRowDataService = require('./app/fakeRowData.service');
+var CheckBoxCellRendererBuilderService = require('./app/CheckBoxCellRendererBuilder.service');
+var DatePickerBuilderService = require('./app/DatePickerBuilder.service');
+
 require('./index.less');
 
 angular
   .module('app', ['ui.router', 'agGrid'])
   .config(routesConfig)
-  .component('app', main);
+  .component('app', main)
+  .service('fakeRowDataService', fakeRowDataService)
+  .service('CheckBoxCellRendererBuilderService', CheckBoxCellRendererBuilderService)
+  .service('DatePickerBuilderService', DatePickerBuilderService);
