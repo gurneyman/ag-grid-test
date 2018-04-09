@@ -1,6 +1,7 @@
 module.exports = fakeRowDataService;
 
-function fakeRowDataService() {
+fakeRowDataService.$inject = ['$timeout'];
+function fakeRowDataService($timeout) {
   var nextEmpNum = 10;
   var firstNames = ['Sophie', 'Isabelle', 'Emily', 'Olivia', 'Lily', 'Chloe', 'Isabella', 'Amelia', 'Jessica', 'Sophia', 'Ava', 'Charlotte', 'Mia', 'Lucy', 'Grace', 'Ruby', 'Ella', 'Evie', 'Freya', 'Isla', 'Poppy', 'Daisy', 'Layla'];
   var lastNames = ['Beckham', 'Black', 'Braxton', 'Brennan', 'Brock', 'Bryson', 'Cadwell', 'Cage', 'Carson', 'Chandler', 'Cohen', 'Cole', 'Corbin', 'Dallas', 'Dalton', 'Dane', 'Donovan', 'Easton', 'Fisher', 'Fletcher', 'Grady', 'Greyson', 'Griffin', 'Gunner', 'Hayden', 'Hudson', 'Hunter', 'Jacoby', 'Jagger', 'Jaxon', 'Jett', 'Kade', 'Kane', 'Keating', 'Keegan', 'Kingston', 'Kobe'];
@@ -8,9 +9,11 @@ function fakeRowDataService() {
 
   return {
     createRow: createRow,
-    generateRows: generateRows
+    generateRows: generateRows,
+    getInfiniteScrollDataSource: getInfiniteScrollDataSource
   };
 
+  // For creating one row with random data
   function createRow() {
     var empNum = nextEmpNum;
     nextEmpNum += 1;
@@ -43,5 +46,29 @@ function fakeRowDataService() {
       fakeData.push(createRow());
     }
     return fakeData;
+  }
+
+  /* 
+    ag-grid datasource implementation
+    See https://www.ag-grid.com/javascript-grid-infinite-scrolling/ for details
+  */
+  function getInfiniteScrollDataSource() {
+    var DATA = generateRows(); // Fake some data
+
+    return {
+      rowCount: null,
+      getRows: function (params) {
+        $timeout( function () {
+          var rowsThisPage = DATA.slice(params.startRow, params.endRow); // Get a slice of it
+
+          var lastRow = -1;
+          if (DATA.length <= params.endRow) { // Are we at the last row?
+            lastRow = DATA.length;
+          }
+
+          params.successCallback(rowsThisPage, lastRow); // return data
+        }, 500);
+      }
+    };
   }
 }
